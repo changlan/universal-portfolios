@@ -106,7 +106,7 @@ class Kelly(Algo):
         ax.set_ylabel('Total Wealth')
         return ax
     
-    def plot_leverage(self, S, leverages=np.linspace(1., 3., 10), gammas=[0., 0.01, 0.1, 0.5], **kwargs):
+    def plot_leverage(self, S, leverages=np.linspace(1., 3., 3), gammas=[0., 0.01, 0.1, 0.2], **kwargs):
         """ Plot heatmap with max leverage on x-axis and gamma on y-axis.
         :param S: Stock prices.
         :param leverages: List (ndarray) of leverages used.
@@ -118,7 +118,7 @@ class Kelly(Algo):
             for j in range(len(leverages)):
                 self.max_leverage = leverages[j]
                 wealths[i, j] = self.run(S).total_wealth
-        ax = sns.heatmap(wealths, robust=True)
+        ax = sns.heatmap(wealths, robust=True, xticklabels=leverages, yticklabels=gammas)
         ax.set_xlabel('Max leverage')
         ax.set_ylabel('Gamma')
         return ax
