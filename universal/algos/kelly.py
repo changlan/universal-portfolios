@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from .. import tools
 import logging
+import seaborn as sns
 from cvxopt import solvers, matrix
 solvers.options['show_progress'] = False
 
@@ -90,7 +91,7 @@ class Kelly(Algo):
 
         return b
 
-    def plot_fraction(self, S, fractions=np.linspace(0., 2., 10), **kwargs):
+    def plot_fraction(self, S, fractions=np.linspace(0., 3., 10), **kwargs):
         """ Plot graph with Kelly fraction on x-axis and total wealth on y-axis.
         :param S: Stock prices.
         :param fractions: List (ndarray) of fractions used.
@@ -103,6 +104,23 @@ class Kelly(Algo):
         ax = pd.Series(wealths, index=fractions, **kwargs).plot(**kwargs)
         ax.set_xlabel('Kelly Fraction')
         ax.set_ylabel('Total Wealth')
+        return ax
+    
+    def plot_leverage(self, S, leverages=np.linspace(1., 3., 10), gammas=[0., 0.01, 0.1, 0.5], **kwargs):
+        """ Plot heatmap with max leverage on x-axis and gamma on y-axis.
+        :param S: Stock prices.
+        :param leverages: List (ndarray) of leverages used.
+        :param gammas: List (ndarray) of gammas used.
+        """
+        wealths = np.zeros((len(gammas), len(leverages)))
+        for i in range(len(gammas)):
+            self.gamma = gammas[i]
+            for j in range(len(leverages)):
+                self.max_leverage = leverages[j]
+                wealths[i, j] = self.run(S).total_wealth
+        ax = sns.heatmap(wealths, robust=True)
+        ax.set_xlabel('Max leverage')
+        ax.set_ylabel('Gamma')
         return ax
 
 # use case
